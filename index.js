@@ -11,37 +11,22 @@ import { getFileContents } from './s3/getFileContents.js';
 const app = express();
 const port = 3000;
 
-async function getFileBody(fileName) {
-    return new Promise((resolve, reject) => 
-        setTimeout(() => {
-            let result = await getFileContents(fileName);
-            resolve(result);
-        }, 200));
-}
-
-
-async function generatePathAndType(files) {
-    return new Promise((resolve, reject) => 
-        setTimeout(() => {
-            files.map((file) => {
-                file.Path = `https://${process.env.S3_BUCKET}.${process.env.S3_KEYWORD}.${process.env.AWS_REGION}.${process.env.AWS_ENDPOINT}/${file.Key}`;
-                file.Type = generateFileTypeByExtension(file.Key);
-            })
-            resolve(files);
-        }, 200));
-}
-
-app.get('/files', async function (req, res) {
-    let files = (await getFiles()).Contents;
-    files = await generatePathAndType(files);
-    files.map((file) => {
+async function modelFiles(files) {
+    for (const file of files) {
         removeUnnecessaryProperties(file, S3_GET_FILES_FROM_BUCKET);
-        if(file.Type == "text") {
-            file.Body = await getFileBody(file.Key);
+        file.Path = `https://${process.env.S3_BUCKET}.${process.env.S3_KEYWORD}.${process.env.AWS_REGION}.${process.env.AWS_ENDPOINT}/${file.Key}`;
+        file.Type = generateFileTypeByExtension(file.Key);
+        if(file.Type === "text") {
+            file.Contents = await getFileContents(file.Key)
         }
-    })
-    console.log(files);
-    return res.status(200).json(await Promise.all(files));
+    }
+    return files;
+}
+
+app.get('/files', async (req, res)  => {
+    let files = (await getFiles()).Contents;
+    files = await modelFiles(files);
+    return res.status(200).json(files);
 })
 
 app.listen(port, () => console.log(`api listening on port ${port}`));
