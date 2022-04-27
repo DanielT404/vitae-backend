@@ -1,12 +1,9 @@
 import 'dotenv/config';
 import express from 'express';
 
-import { S3_GET_FILES_FROM_BUCKET } from './s3/utils/types/query.js';
-import { removeUnnecessaryProperties } from './s3/utils/removeUnnecessaryProperties.js';
-import { generateFileTypeByExtension } from './s3/utils/generateFileTypeByExtension.js';
-
 import { getFiles } from './s3/getFilesFromBucket.js';
-import { getFileContents } from './s3/getFileContents.js';
+import { modelFiles } from './s3/utils/modelFiles.js';
+
 import { log } from './dev/performanceLogger.js';
 
 
@@ -17,24 +14,6 @@ if (process.env.APP_ENV === 'development') {
 }
 if (process.env.APP_ENV === 'production') {
     app.use(express.errorHandler());
-}
-
-async function modelFiles(files) {
-    if(process.env.APP_ENV == "DEVELOPMENT") {
-        log(files, "before modelling files");
-    }
-    for await (const file of files) {
-        await removeUnnecessaryProperties(file, S3_GET_FILES_FROM_BUCKET);
-        file.Path = `https://${process.env.S3_BUCKET}.${process.env.S3_KEYWORD}.${process.env.AWS_REGION}.${process.env.AWS_ENDPOINT}/${file.Key}`;
-        file.Type = await generateFileTypeByExtension(file.Key);
-        if(file.Type === "text") {
-            file.Contents = await getFileContents(file.Key)
-        }
-    }
-    if(process.env.APP_ENV == "DEVELOPMENT") {
-        log(files, "after modelling files");
-    }
-    return files;
 }
 
 app.get('/files', async (req, res)  => {
