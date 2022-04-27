@@ -38,18 +38,23 @@ async function modelFiles(files) {
 }
 
 app.get('/files', async (req, res)  => {
-    if(process.env.APP_ENV == "DEVELOPMENT") {
-        log(req, "initial PoE");
+    try {
+        if(process.env.APP_ENV == "DEVELOPMENT") {
+            log(req, "initial PoE");
+        }
+        let files = (await getFiles()).Contents;
+        if(process.env.APP_ENV == "DEVELOPMENT") {
+            log(files, "populating files coming from AWS API")
+        }
+        files = await modelFiles(files);
+        if(process.env.APP_ENV == "DEVELOPMENT") {
+            log(files, "final PoE");
+        }
+        return res.status(200).json({success: true, files: files});
+    } catch (error) {
+        console.log(`Error encountered while trying to get files. \n Error message: ${error} \n`);
+        return res.status(500).json({success: false, message: "Service is temporarily unavailable, please try again later."});
     }
-    let files = (await getFiles()).Contents;
-    if(process.env.APP_ENV == "DEVELOPMENT") {
-        log(files, "populating files coming from AWS API")
-    }
-    files = await modelFiles(files);
-    if(process.env.APP_ENV == "DEVELOPMENT") {
-        log(files, "final PoE");
-    }
-    return res.status(200).json(files);
 })
 
 app.listen(port, () => console.log(`API listening on port ${port} \n`));
