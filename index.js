@@ -54,7 +54,7 @@ if (SERVER_ENVIRONMENT == 'production') {
     )
 }
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Origin', APP_URL)
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST')
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
     if (req.method === 'OPTIONS') {
