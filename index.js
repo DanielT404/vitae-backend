@@ -1,55 +1,78 @@
 import 'dotenv/config'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
 import express from 'express'
+import { check, validationResult } from 'express-validator'
+import helmet from 'helmet'
+import morgan from 'morgan'
+import bodyParser from 'body-parser'
+
+import fetch from 'node-fetch'
 
 import { getFiles } from './s3/getFilesFromBucket.js'
 import { modelFiles } from './s3/utils/modelFiles.js'
 
-import { check, validationResult } from 'express-validator'
 import errorFormatter from './ses/utils/errorFormatter.js'
 import { sendEmail } from './ses/sendEmail.js'
 
-import { log } from './dev/performanceLogger.js'
+import { customLogReport } from './utils/customLogReport.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+const SERVER_ENVIRONMENT = process.env.SERVER_ENVIRONMENT
+const SERVER_PORT = process.env.SERVER_PORT
+const APP_URL = process.env.APP_URL
 
 const app = express()
-const port = 3000
-app.use(express.json())
-
-if (process.env.APP_ENV === 'development') {
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
+app.use(bodyParser.json())
+app.use(helmet())
+if (SERVER_ENVIRONMENT == 'development') {
+    app.use(
+        morgan('dev', {
+            stream: fs.createWriteStream(
+                path.join(__dirname, '/logs/access.dev.log'),
+                {
+                    flags: 'a',
+                }
+            ),
+        })
+    )
 }
-if (process.env.APP_ENV === 'production') {
-    app.use(express.errorHandler())
+if (SERVER_ENVIRONMENT == 'production') {
+    app.use(
+        morgan('combined', {
+            stream: fs.createWriteStream(
+                path.join(__dirname, '/logs/access.log'),
+                {
+                    flags: 'a',
+                }
+            ),
+        })
+    )
 }
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader(
-        'Access-Control-Allow-Methods',
-        'OPTIONS, GET, POST, PUT, PATCH, DELETE'
-    )
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
     if (req.method === 'OPTIONS') {
         return res.sendStatus(200)
     }
     next()
 })
 
-app.get('/files', async (req, res) => {
+app.get('/api/files', async (req, res) => {
     try {
-        if (process.env.APP_ENV == 'DEVELOPMENT') {
-            log(req, 'initial PoE')
-        }
         let files = (await getFiles()).Contents
-        if (process.env.APP_ENV == 'DEVELOPMENT') {
-            log(files, 'populating files coming from AWS API')
-        }
         files = await modelFiles(files)
-        if (process.env.APP_ENV == 'DEVELOPMENT') {
-            log(files, 'final PoE')
-        }
         return res.status(200).json({ success: true, files: files })
     } catch (error) {
-        console.log(
-            `Error encountered while trying to get files. \n Error message: ${error} \n`
+        customLogReport(
+            path.join(__dirname),
+            'files',
+            `Error encountered while trying to get files. Error message: "${error}" \n`
         )
         return res.status(500).json({
             success: false,
@@ -60,8 +83,9 @@ app.get('/files', async (req, res) => {
 })
 
 app.post(
-    '/sendEmail',
+    '/api/sendEmail',
     [
+        check('secret').not().isEmpty(),
         check('token').not().isEmpty(),
         check('message').isLength({ min: 15 }).trim().escape(),
         check('email').isEmail().normalizeEmail(),
@@ -72,23 +96,44 @@ app.post(
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() })
         }
-        const { name, email, message } = req.body
-        try {
-            let { MessageId } = await sendEmail(name, email, message)
-            return res.status(200).json({
-                success: true,
-                messageId: MessageId,
-                message:
-                    'Your message has been sent succesfully. Keep in touch!',
-            })
-        } catch (error) {
-            return res.status(500).json({
+        const { name, email, message, secret, token } = req.body
+        const VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
+        const verify = await fetch(VERIFY_URL, {
+            method: 'POST',
+            body: `secret=${secret}&response=${token}`,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        })
+        const verification = await verify.json()
+        if (verification.success) {
+            try {
+                let { MessageId } = await sendEmail(name, email, message)
+                return res.status(200).json({
+                    success: true,
+                    messageId: MessageId,
+                    message:
+                        'Your message has been sent succesfully. Keep in touch!',
+                })
+            } catch (error) {
+                customLogReport(
+                    path.join(__dirname),
+                    'sendEmail',
+                    `Error encountered while trying to send email. Error message: "${error}" \n`
+                )
+                return res.status(500).json({
+                    success: false,
+                    message:
+                        'Service is temporary unavailable, please try again later.',
+                })
+            }
+        } else {
+            return res.status(400).json({
                 success: false,
-                message:
-                    'Service is temporary unavailable, please try again later.',
+                message: 'Please retry reCAPTCHA challenge.',
             })
         }
     }
 )
 
-app.listen(port, () => console.log(`API listening on port ${port} \n`))
+app.listen(SERVER_PORT, () =>
+    console.log(`API listening on port ${SERVER_PORT} \n`)
+)

@@ -7,7 +7,7 @@ const getFiles = async () => {
         const data = await s3Client.send(new ListObjectsCommand(bucketParams))
         return data
     } catch (err) {
-        throw new Error("Couldn't get list of files")
+        throw new Error(err)
     }
 }
 

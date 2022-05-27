@@ -10,7 +10,10 @@ const errorFormatter = ({ param }) => {
             return 'Message must consist of atleast 15 characters.'
             break
         case 'token':
-            return 'Please solve the reCAPTCHA challenge.'
+            return 'You must solve reCAPTCHA challenge to proceed.'
+            break
+        case 'secret':
+            return 'Uh oh! There seems to be some misconfiguration. Contact website owner.'
             break
         default:
             break

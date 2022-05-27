@@ -7,15 +7,9 @@ import { generateFileTypeByExtension } from '../utils/generateFileTypeByExtensio
 import { shrinkFileName } from '../utils/shrinkFileName.js'
 import { captureFileExtension } from '../utils/captureFileExtension.js'
 import { getMaterialIcon } from '../utils/getMaterialIcon.js'
-
 import { getFileContents } from '../getFileContents.js'
 
-import { log } from '../../dev/performanceLogger.js'
-
 export async function modelFiles(files) {
-    if (process.env.APP_ENV == 'DEVELOPMENT') {
-        log(files, 'before modelling files')
-    }
     for await (const file of files) {
         await removeUnnecessaryProperties(file, S3_GET_FILES_FROM_BUCKET)
         file.Id = randomUUID()
@@ -27,9 +21,6 @@ export async function modelFiles(files) {
         file.KeyShrinked = await shrinkFileName(file.Key)
         file.Extension = await captureFileExtension(file.Key)
         file.MaterialIcon = await getMaterialIcon(file.Type)
-    }
-    if (process.env.APP_ENV == 'DEVELOPMENT') {
-        log(files, 'after modelling files')
     }
     return files
 }

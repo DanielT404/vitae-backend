@@ -27,8 +27,7 @@ const sendEmail = async (name, email, message) => {
         const response = await sesClient.send(command)
         return response
     } catch (err) {
-        console.log(err)
-        throw new Error("Couldn't send the email.")
+        throw new Error(err)
     }
 }
 
