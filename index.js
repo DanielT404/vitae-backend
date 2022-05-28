@@ -29,6 +29,7 @@ const APP_URL = process.env.APP_URL
 const app = express()
 app.use(bodyParser.json())
 app.use(helmet())
+
 if (SERVER_ENVIRONMENT == 'development') {
     app.use(
         morgan('dev', {
