@@ -23,8 +23,8 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const SERVER_ENVIRONMENT = process.env.SERVER_ENVIRONMENT
-const SERVER_PORT = process.env.SERVER_PORT
-const APP_URL = process.env.APP_URL
+const SERVER_PORT = process.env.SERVER_PORT || 3000
+const APP_URL = process.env.APP_URL || '*'
 
 const app = express()
 app.use(bodyParser.json())

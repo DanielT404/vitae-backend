@@ -7,5 +7,6 @@ COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install --silent && npm install -g nodemon
 COPY . .
 
-ENTRYPOINT [ "nodemon", "-L", "index.js" ]
+EXPOSE 3000
+CMD ["npm", "start"]
 
