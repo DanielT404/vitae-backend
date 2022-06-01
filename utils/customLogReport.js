@@ -6,7 +6,10 @@ function customLogReport(path, route, message) {
     fs.appendFile(
         `${path}/logs/access.${route}.log`,
         `[${formattedDate}] ${message} \n`,
-        'utf-8'
+        'utf-8',
+        (err) => {
+            if (err) throw new Error(err);
+        }
     )
 }
 
