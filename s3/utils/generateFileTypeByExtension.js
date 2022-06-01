@@ -9,6 +9,8 @@ export async function generateFileTypeByExtension(fileName) {
         webp: 'image',
         png: 'image',
         txt: 'text',
+        yml: 'text',
+        js: 'text'
     }
     const extension = await captureFileExtension(fileName)
     return fileTypes[extension] || 'abstract'
