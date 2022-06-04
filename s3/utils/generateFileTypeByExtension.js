@@ -12,6 +12,11 @@ export async function generateFileTypeByExtension(fileName) {
         yml: 'text',
         js: 'text'
     }
-    const extension = await captureFileExtension(fileName)
-    return fileTypes[extension] || 'abstract'
+    const extension = await captureFileExtension(fileName);
+    return new Promise((resolve, reject) => {
+        if (extension && !fileTypes[extension]) {
+            reject(`File ('${fileName}') extension '.${extension}' doesn't have a file type set. Valid types: ENUM['image', 'text']`);
+        }
+        resolve(fileTypes[extension])
+    })
 }

@@ -10,7 +10,8 @@ export async function getMaterialIcon(fileType) {
         text: 'article',
         image: 'image',
     }
-    if (!icon[fileType])
-        throw new Error("File type currently doesn't have a material icon set.")
-    return icon[fileType]
+    return new Promise((resolve, reject) => {
+        if (!icon[fileType]) reject(`File type '${fileType}' currently doesn't have a material icon type set.`);
+        resolve(icon[fileType]);
+    })
 }

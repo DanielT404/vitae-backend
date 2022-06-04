@@ -1,10 +1,10 @@
 export async function shrinkFileName(fileName) {
-    let shrinkedName = fileName
+    let shrinkedName = fileName.trim();
+    shrinkedName = shrinkedName.replace(/\s/g, '');
     if (fileName.length > 6) {
+        const dots = Array(4).fill('.')
         shrinkedName = fileName.substr(0, 5)
-        let dots = Array(4).fill('.')
         shrinkedName = shrinkedName.split('').concat(dots).join('')
-        shrinkedName = shrinkedName.replace('-', '')
     }
-    return shrinkedName
+    return Promise.resolve().then(() => shrinkedName);
 }
