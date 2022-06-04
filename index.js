@@ -14,10 +14,11 @@ import fetch from 'node-fetch'
 import { getFiles } from './s3/getFilesFromBucket.js'
 import { modelFiles } from './s3/utils/modelFiles.js'
 
-import errorFormatter from './ses/utils/errorFormatter.js'
+import errorFormatter from './utils/errorFormatter.js'
 import { sendEmail } from './ses/sendEmail.js'
 
 import { customLogReport } from './utils/customLogReport.js'
+import { getProjects } from './dynamodb/getProjects.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -68,7 +69,7 @@ app.get('/api/files', async (req, res) => {
     try {
         let files = (await getFiles()).Contents
         files = await modelFiles(files)
-        return res.status(200).json({ success: true, files: files })
+        return res.status(200).json({ success: true, data: files })
     } catch (error) {
         customLogReport(
             path.join(__dirname),
@@ -79,6 +80,23 @@ app.get('/api/files', async (req, res) => {
             success: false,
             message:
                 'Service is temporarily unavailable, please try again later.',
+        })
+    }
+})
+
+app.get('/api/projects', async (req, res) => {
+    try {
+        let projects = await getProjects()
+        return res.status(200).json({ success: true, data: projects })
+    } catch (error) {
+        customLogReport(
+            path.join(__dirname),
+            'projects',
+            `Error encountered while trying to get projects. Error message: "${error}" \n`
+        )
+        return res.status(500).json({
+            success: false,
+            message: 'Service is temporarily unavailable, please try again later.'
         })
     }
 })
