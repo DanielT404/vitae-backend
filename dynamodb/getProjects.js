@@ -12,7 +12,7 @@ const getProjects = async () => {
         response.Items = response.Items.sort((prev, curr) => prev.in_view_order - curr.in_view_order);
         return response.Items;
     } catch (err) {
-        console.log(err);
+        throw new Error(err);
     }
 }
 
