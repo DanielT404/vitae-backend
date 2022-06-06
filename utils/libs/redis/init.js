@@ -1,12 +1,5 @@
-import path from 'path'
-import { fileURLToPath } from 'url'
-
 import { createClient } from 'redis'
-
 import { customLogReport } from '../../customLogReport.js';
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 const client = createClient({
     url: process.env.REDIS_ENDPOINT_URL
