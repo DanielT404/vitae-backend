@@ -1,4 +1,4 @@
-import { captureFileExtension } from '../utils/captureFileExtension.js'
+import { captureFileExtension } from './captureFileExtension.js'
 
 export async function generateFileTypeByExtension(fileName) {
     const fileTypes = {

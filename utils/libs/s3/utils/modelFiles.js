@@ -1,12 +1,12 @@
 import { randomUUID } from 'crypto'
 
-import { S3_GET_FILES_FROM_BUCKET } from '../utils/types/query.js'
+import { S3_GET_FILES_FROM_BUCKET } from './types/query.js'
 
-import { removeUnnecessaryProperties } from '../utils/removeUnnecessaryProperties.js'
-import { generateFileTypeByExtension } from '../utils/generateFileTypeByExtension.js'
-import { shrinkFileName } from '../utils/shrinkFileName.js'
-import { captureFileExtension } from '../utils/captureFileExtension.js'
-import { getMaterialIcon } from '../utils/getMaterialIcon.js'
+import { removeUnnecessaryProperties } from './removeUnnecessaryProperties.js'
+import { generateFileTypeByExtension } from './generateFileTypeByExtension.js'
+import { shrinkFileName } from './shrinkFileName.js'
+import { captureFileExtension } from './captureFileExtension.js'
+import { getMaterialIcon } from './getMaterialIcon.js'
 import { getFileContents } from '../getFileContents.js'
 
 export async function modelFiles(files) {
