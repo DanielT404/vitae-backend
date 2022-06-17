@@ -35,10 +35,10 @@ const __dirname = path.dirname(__filename)
 
 const SERVER_ENVIRONMENT = process.env.SERVER_ENVIRONMENT || "development";
 const SERVER_PORT = process.env.SERVER_PORT || 3000
-const APP_URL = SERVER_ENVIRONMENT === "development" && "*" || process.env.APP_URL;
+const APP_URL = process.env.APP_URL;
 
-if (SERVER_ENVIRONMENT === "production" && APP_URL == null) {
-    throw new Error('APP_URL environment variable is not set and is required in production environment.')
+if (APP_URL == null) {
+    throw new Error('APP_URL environment variable is not set and is required in order to run the backend.')
 }
 
 try {
@@ -51,7 +51,6 @@ const app = express()
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", APP_URL)
     res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST")
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type")
     if (req.method === "OPTIONS") {
         return res.sendStatus(200)
     }
