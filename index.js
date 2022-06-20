@@ -33,12 +33,11 @@ import errorFormatter from './utils/errorFormatter.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const SERVER_ENVIRONMENT = process.env.SERVER_ENVIRONMENT || "development";
-const SERVER_PORT = process.env.SERVER_PORT || 3000
+const SERVER_PORT = process.env.SERVER_PORT;
 const APP_URL = process.env.APP_URL;
 
 if (APP_URL == null) {
-    throw new Error('APP_URL environment variable is not set and is required in order to run the backend.')
+    throw new Error('APP_URL environment variable is not set and is required in order to run the backend service.')
 }
 
 try {
@@ -61,31 +60,16 @@ app.use(helmet({
     contentSecurityPolicy: false
 }))
 app.use(responseTime())
-
-if (SERVER_ENVIRONMENT == "development") {
-    app.use(
-        morgan("dev", {
-            stream: fs.createWriteStream(
-                path.join(__dirname, "/logs/access.dev.log"),
-                {
-                    flags: "a",
-                }
-            ),
-        })
-    )
-}
-if (SERVER_ENVIRONMENT == "production") {
-    app.use(
-        morgan("combined", {
-            stream: fs.createWriteStream(
-                path.join(__dirname, "/logs/access.log"),
-                {
-                    flags: "a",
-                }
-            ),
-        })
-    )
-}
+app.use(
+    morgan("tiny", {
+        stream: fs.createWriteStream(
+            path.join(__dirname, "/logs/access.log"),
+            {
+                flags: "a",
+            }
+        ),
+    })
+)
 
 app.get("/api/files", async (req, res) => {
     try {
