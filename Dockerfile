@@ -7,5 +7,6 @@ COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install --production
 COPY . .
 
+RUN npm tsc:build
 CMD ["npm", "start"]
 

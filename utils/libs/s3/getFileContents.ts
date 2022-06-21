@@ -1,11 +1,11 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3'
-import { s3Client } from './client.js'
+import { s3Client } from './client';
 
-const getFileContents = async (fileName) => {
-    const streamToString = (stream) =>
+const getFileContents = async (fileName: string) => {
+    const streamToString = (stream: any) =>
         new Promise((resolve, reject) => {
-            const chunks = []
-            stream.on('data', (chunk) => chunks.push(chunk))
+            const chunks : Uint8Array[] = []
+            stream.on('data', (chunk: Uint8Array) => chunks.push(chunk))
             stream.on('error', reject)
             stream.on('end', () =>
                 resolve(Buffer.concat(chunks).toString('utf8'))

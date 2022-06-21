@@ -1,0 +1,9 @@
+/src/* merge=theirs
+/utils/* merge=theirs
+
+/logs merge=ours
+.gitattributes merge=ours
+.dockerignore merge=ours
+Dockerfile merge=ours
+index.ts merge=ours
+README.md merge=ours

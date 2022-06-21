@@ -1,4 +1,4 @@
-export async function shrinkFileName(fileName) {
+export async function shrinkFileName(fileName: string) : Promise<string> {
     let shrinkedName = fileName.trim();
     shrinkedName = shrinkedName.replace(/\s/g, '');
     if (fileName.length > 6) {

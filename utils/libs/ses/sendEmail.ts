@@ -1,10 +1,10 @@
-import { SendEmailCommand } from '@aws-sdk/client-ses'
-import { sesClient } from './client.js'
+import { SendEmailCommand, SendEmailCommandInput, SendEmailCommandOutput } from '@aws-sdk/client-ses'
+import { sesClient } from './client';
 
-const sendEmail = async (name, email, message) => {
-    const params = {
+const sendEmail = async (name: string, email: string, message: string) : Promise<SendEmailCommandOutput> => {
+    const params : SendEmailCommandInput = {
         Destination: {
-            ToAddresses: [process.env.AWS_SES_EMAIL],
+            ToAddresses: [process.env.AWS_SES_EMAIL as string],
         },
         Message: {
             Subject: {
@@ -20,14 +20,14 @@ const sendEmail = async (name, email, message) => {
                 },
             },
         },
-        Source: process.env.AWS_SES_EMAIL,
+        Source: process.env.AWS_SES_EMAIL as string,
     }
     try {
         const command = new SendEmailCommand(params)
         const response = await sesClient.send(command)
         return response
     } catch (err) {
-        throw new Error(err)
+        throw new Error(err as string)
     }
 }
 
