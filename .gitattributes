@@ -1,10 +1,11 @@
 /src/* merge=theirs
 /utils/* merge=theirs
 
-.env.example merge=ours
 /logs merge=ours
 .gitattributes merge=ours
-.dockerignore merge=ours
+.gitignore merge=ours
 Dockerfile merge=ours
+.dockerignore merge=ours
+.env.example merge=ours
 index.ts merge=ours
 README.md merge=ours
