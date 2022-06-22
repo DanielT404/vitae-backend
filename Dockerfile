@@ -10,3 +10,5 @@ COPY . .
 RUN npm tsc:build
 CMD ["npm", "start"]
 
+
+
