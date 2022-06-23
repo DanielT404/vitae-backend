@@ -1,9 +1,9 @@
-/src merge=theirs
-/src/**/* merge=theirs
-
 .gitattributes merge=ours
 Dockerfile merge=ours
 index.ts merge=ours
 README.md merge=ours
 .env.example merge=ours
 .dockerignore merge=ours
+
+/src merge=theirs
+/src/**/* merge=theirs
