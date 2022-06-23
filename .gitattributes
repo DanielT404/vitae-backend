@@ -1,3 +1,4 @@
+.gitattributes merge=ours
 Dockerfile merge=ours
 index.ts merge=ours
 README.md merge=ours
