@@ -7,7 +7,7 @@ COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install
 COPY . .
 
-CMD ["npx nodemon", "--exec", "npm start"]
+CMD ["npm", "run:dev"]
 
 
 
