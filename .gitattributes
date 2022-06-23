@@ -1,5 +1,5 @@
-/src merge=theirs
-/src/**/* merge=theirs
+/src merge=ours
+/src/**/* merge=ours
 
 .gitattributes merge=ours
 Dockerfile merge=ours
