@@ -1,4 +1,4 @@
-## My own personal space production-ready backend
+## My own personal space development-ready backend
 
 ### Prerequisites
 
