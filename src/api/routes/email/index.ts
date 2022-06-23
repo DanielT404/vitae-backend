@@ -3,13 +3,16 @@ import fetch from 'node-fetch'
 import { check, validationResult } from 'express-validator'
 
 // ses utils
-import  { sendEmail } from '../../../../utils/libs/ses/sendEmail';
+import  { sendEmail } from '../../utils/libs/ses/sendEmail';
 
 // logging
-import { customLogReport } from '../../../../utils/customLogReport';
+import { LoggingOf } from 'utils/logging/enum/LoggingOf';
+import { RouteLogger } from 'utils/logging/routes/RouteLogger';
+import { generateHttpOptions } from 'utils/logging/routes/functions/generateHttpOptions';
 
 // mail error formatter
-import { EmailErrorFormatter, ErrorFormatterMethod, ErrorFormatterTypes } from '../../../../utils/errorFormatter';
+import { ErrorFormatter, ErrorFormatterMethod, ErrorFormatterTypes } from 'utils/formatters/ErrorFormatter';
+import { Services } from 'utils/logging/enum/Services';
 
 
 const router = express.Router()
@@ -23,8 +26,12 @@ router.post(
         check("name").isLength({ min: 3 }).trim().escape(),
     ],
     async (req: express.Request, res: express.Response) => {
-        const errorFormatter = new EmailErrorFormatter(ErrorFormatterTypes.Email, ErrorFormatterMethod.POST);
-        const errors = validationResult(req).formatWith(errorFormatter.errorMessage);
+        const logOptions = { 
+            http: generateHttpOptions(req) 
+        };
+
+        const errorFormatter : any = new ErrorFormatter(ErrorFormatterTypes.Email, ErrorFormatterMethod.POST);
+        const errors = validationResult(req).formatWith(errorFormatter.getErrorMessage);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() })
         }
@@ -46,10 +53,14 @@ router.post(
                         "Your message has been sent succesfully. Keep in touch!",
                 })
             } catch (error) {
-                customLogReport(
-                    "sendEmail",
-                    `Error encountered while trying to send email. Error message: "${error}" \n`
-                )
+                const log : RouteLogger = new RouteLogger(
+                    `Error encountered while trying to send email. Error message: "${error}" \n`, 
+                    'email',
+                    LoggingOf.error, 
+                    Services.SES
+                );
+                log.append(log.getFilePath(), logOptions);
+                    
                 return res.status(500).json({
                     success: false,
                     message:

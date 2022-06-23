@@ -1,5 +1,6 @@
 import { createClient } from 'redis'
-import { customLogReport } from '../../../utils/customLogReport';
+import { LoggingOf } from 'utils/logging/enum/LoggingOf';
+import { ServiceLogger } from 'utils/logging/services/ServiceLogger';
 
 const client = createClient({
     url: process.env.REDIS_ENDPOINT_URL as string
@@ -10,7 +11,8 @@ async function initializeRedis() {
     client.on("error", (err) => {
         throw new Error(`Redis client error: ${err}`);
     })
-    customLogReport("redis.connect", "Redis client is active...");
+    const log : ServiceLogger = new ServiceLogger('Redis client is active...', LoggingOf.connect, 'redis');
+    log.append(log.getFilePath());
 }
 
 export { client, initializeRedis }

@@ -1,30 +1,30 @@
 import 'dotenv/config'
-import * as fs from 'fs'
-import * as path from 'path'
-import * as express from 'express'
-import * as bodyParser from 'body-parser'
+import { createWriteStream } from 'fs'
+import path from 'path'
+import express from 'express'
+import { json as bodyParserJSON } from 'body-parser'
 
 import helmet from 'helmet'
-import * as morgan from 'morgan'
-import * as responseTime from 'response-time'
+import morgan from 'morgan'
+import responseTime from 'response-time'
 
-import { initializeRedis } from './utils/libs/redis/init'
+import { initializeRedis } from 'utils/libs/redis/init'
 
-import { filesRouter } from './src/api/routes/files'
-import { projectsRouter } from './src/api/routes/projects'
-import { emailRouter } from './src/api/routes/mail'
+import { filesRouter } from 'routes/files'
+import { projectsRouter } from 'routes/projects'
+import { emailRouter } from 'routes/email'
 
 const SERVER_PORT = process.env.SERVER_PORT;
-const APP_URL = process.env.APP_URL;
+const APP_URL = process.env.APP_URL; 
 if (APP_URL == null) {
     throw new Error('APP_URL environment variable is not set and is required in order to run the backend.')
 }
 
-try {
-    initializeRedis();
-} catch (error) {
-    throw new Error(error as string);
-}
+// try {
+//     initializeRedis();
+// } catch (error) {
+//     throw new Error(error as string);
+// }
 
 const app = express()
 app.use((req, res, next) => {
@@ -35,15 +35,15 @@ app.use((req, res, next) => {
     }
     return next()
 })
-app.use(bodyParser.json())
+app.use(bodyParserJSON())
 app.use(helmet({
     contentSecurityPolicy: false
 }))
 app.use(responseTime())
 app.use(
     morgan("tiny", {
-        stream: fs.createWriteStream(
-            path.join(__dirname, "/logs/access.log"),
+        stream: createWriteStream(
+            path.join(path.resolve(__dirname), "/logs/morgan.default.tiny.log"),
             {
                 flags: "a",
             }
@@ -57,3 +57,4 @@ app.use(`${process.env.API_PREFIX}/email`, emailRouter);
 app.listen(SERVER_PORT, () =>
     console.log(`API listening on port ${SERVER_PORT} \n`)
 )
+

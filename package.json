@@ -1,14 +1,14 @@
 {
   "name": "vitae-backend",
   "version": "1.0.0",
-  "description": "my awesome personal space backend",
+  "description": "My awesome personal space backend",
   "author": "Daniel Țună",
   "license": "ISC",
   "main": "index.js",
   "scripts": {
     "tsc:build": "tsc",
     "tsc:watch": "tsc -w",
-    "start": "cd dist && node index.js"
+    "start": "cross-env NODE_PATH=./src/api ts-node index.ts"
   },
   "keywords": [],
   "dependencies": {
@@ -24,13 +24,16 @@
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.1",
     "redis": "^4.1.0",
-    "response-time": "^2.3.2",
-    "typescript": "^4.7.4"
+    "response-time": "^2.3.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/morgan": "^1.9.3",
     "@types/node-fetch": "^2.6.2",
-    "@types/response-time": "^2.3.5"
+    "@types/response-time": "^2.3.5",
+    "cross-env": "^7.0.3",
+    "ts-node": "^10.8.1",
+    "tsconfig-paths": "^4.0.0",
+    "typescript": "^4.7.4"
   }
 }
