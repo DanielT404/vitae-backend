@@ -6,8 +6,7 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "tsc:build": "tsc",
-    "tsc:watch": "tsc -w",
+    "run:dev": "nodemon --exec cross-env NODE_PATH=./src/api ts-node index.ts",
     "start": "cross-env NODE_PATH=./src/api ts-node index.ts"
   },
   "keywords": [],
@@ -32,6 +31,7 @@
     "@types/node-fetch": "^2.6.2",
     "@types/response-time": "^2.3.5",
     "cross-env": "^7.0.3",
+    "nodemon": "^2.0.18",
     "ts-node": "^10.8.1",
     "tsconfig-paths": "^4.0.0",
     "typescript": "^4.7.4"
