@@ -20,11 +20,11 @@ if (APP_URL == null) {
     throw new Error('APP_URL environment variable is not set and is required in order to run the backend.')
 }
 
-// try {
-//     initializeRedis();
-// } catch (error) {
-//     throw new Error(error as string);
-// }
+try {
+    initializeRedis();
+} catch (error) {
+    throw new Error(error as string);
+}
 
 const app = express()
 app.use((req, res, next) => {
