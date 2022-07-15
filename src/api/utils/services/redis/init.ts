@@ -1,5 +1,6 @@
 import { createClient } from 'redis'
 import { LoggingOf } from 'utils/logging/enum/LoggingOf';
+import { Services } from 'utils/logging/enum/Services';
 import { ServiceLogger } from 'utils/logging/services/ServiceLogger';
 
 const client = createClient({
@@ -9,9 +10,18 @@ const client = createClient({
 async function initializeRedis() {
     await client.connect();
     client.on("error", (err) => {
+        let log = new ServiceLogger();
+        log.setMessage(`Redis client error: ${err}`);
+        log.setLoggingOf(LoggingOf.error);
+        log.setService(Services.redis);
+        log.append(log.getFilePath());
+
         throw new Error(`Redis client error: ${err}`);
     })
-    const log : ServiceLogger = new ServiceLogger('Redis client is active...', LoggingOf.connect, 'redis');
+    let log : ServiceLogger = new ServiceLogger();
+    log.setMessage('Redis client is active...');
+    log.setLoggingOf(LoggingOf.connect);
+    log.setService(Services.redis);
     log.append(log.getFilePath());
 }
 

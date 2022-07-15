@@ -1,11 +1,24 @@
 {
     "compilerOptions": {
-        "strict": true,
+        // "strict": true,
+        "noEmit": false,
+        "incremental": true,
+        "isolatedModules": true,
         "skipLibCheck": true,
-        "declaration": true,
-        "sourceMap": true,
         "esModuleInterop": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
         "moduleResolution": "node",
-        "baseUrl": "./src/api",
+        "baseUrl": "./src",
+        "paths":{
+            "utils/*": ["api/utils/*"],
+            "routes/*": ["api/routes/*"]
+        },
     },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": ["node_modules/**"]
 }

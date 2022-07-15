@@ -1,17 +1,26 @@
 import { BaseLogger } from "../BaseLogger";
+import { LoggingOf } from "../enum/LoggingOf";
+import { Services } from "../enum/Services";
 
 export class ServiceLogger extends BaseLogger {
-    protected readonly filePath: string;
-    protected route: string = '';
-    protected loggingOf: string = '';
-
-    constructor(message: string, loggingOf: string, service: string) {
-        super(message);
-        this.filePath = `/${service}.${loggingOf}.log`;
-    }
+    protected filePath: string;
+    protected route: string
+    protected service: Services;
+    protected loggingOf: LoggingOf;
 
     getFilePath() {
+        this.filePath = `/${this.service}.${this.loggingOf}.log`
         return this.filePath;
+    }
+
+    setService(service: Services) {
+        this.service = service;
+        return this;
+    }
+
+    setLoggingOf(loggingOf: LoggingOf) {
+        this.loggingOf = loggingOf;
+        return this;
     }
 
 }
