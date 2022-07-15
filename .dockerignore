@@ -1,4 +1,5 @@
 /node_modules
+/logs
 /logs/*.log
 /logs/routes/**/*.log
 /dist

@@ -4,20 +4,53 @@ import { LoggingOf } from "../enum/LoggingOf";
 import { Services } from "../enum/Services";
 
 export class RouteLogger extends BaseLogger {
-    protected readonly filePath: string;
-    protected loggingOf: string = '';
+    protected logDir: string = `routes`;
+    protected route: string;
+    protected message: string;
+    protected loggingOf: LoggingOf;
+    protected service?: Services = null;
 
-    constructor(message: string, dir: string, loggingOf: LoggingOf, service?: Services) {
-        super(message);
-        this.filePath = `/routes/${dir}/${loggingOf}`;
-        if(service) {
-            this.filePath += `.${service}.log`;
+    constructor(route: string) {
+        super();
+        this.route = route;
+    }
+
+    getRoute() : string {
+        return this.route;
+    }
+
+    getLoggingOf() : LoggingOf {
+        return this.loggingOf;
+    }
+
+    getService() : Services {
+        return this.service;
+    }
+
+    getLogDir() : string {
+        let logDir = `/${this.logDir}/${this.route}/${this.loggingOf}`;
+        if(this.service) {
+            logDir += `.${this.service}.log`;
         } else {
-            this.filePath += `.log`;
+            logDir += `${this.getRoute()}.log`;
         }
+        this.logDir = logDir;
+        return logDir;
     }
 
-    getFilePath() {
-        return this.filePath;
+    setRoute(route: string) {
+        this.route = route;
+        return this;
     }
+
+    setLoggingOf(loggingOf: LoggingOf) {
+        this.loggingOf = loggingOf;
+        return this;
+    }
+
+    setService(service: Services) {
+        this.service = service;
+        return this;
+    }
+
 }

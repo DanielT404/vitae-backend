@@ -1,5 +1,4 @@
-FROM node:16.14.2-alpine
-ENV NODE_ENV=development
+FROM node:16.14.2
 
 WORKDIR /app
 
@@ -7,7 +6,10 @@ COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install
 COPY . .
 
-CMD ["npm", "run:dev"]
+RUN mkdir logs
+RUN chmod -R a+rwx /app/logs
+
+CMD ["npm", "run", "dev"]
 
 
 
