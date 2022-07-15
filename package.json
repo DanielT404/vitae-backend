@@ -1,9 +1,9 @@
 {
-  "name": "vitae-backend",
-  "version": "1.0.0",
-  "description": "My awesome personal space backend",
   "author": "Daniel Țună",
-  "license": "ISC",
+  "description": "My awesome online personal space... in its backend version :-)",
+  "version": "1.0.0",
+  "license": "MIT",
+  "name": "vitae-backend",
   "main": "index.js",
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register index.ts",
