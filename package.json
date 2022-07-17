@@ -7,7 +7,7 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register index.ts",
-    "dev": "ts-node-dev --poll --respawn --transpile-only --ignore-watch node_modules -r tsconfig-paths/register index.ts"
+    "dev": "ts-node-dev --ignore-watch node_modules -r tsconfig-paths/register index.ts"
   },
   "keywords": [],
   "dependencies": {
