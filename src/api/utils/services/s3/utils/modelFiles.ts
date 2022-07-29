@@ -7,7 +7,7 @@ import { captureFileExtension } from './captureFileExtension'
 import { getMaterialIcon } from './getMaterialIcon'
 import { getFileContents } from '../getFileContents';
 
-export async function modelFiles(files: any) {
+export async function modelFiles(files) {
     for (const file of files) {
         await removeUnnecessaryProperties(file, QueryTypes.S3_GET_FILES_FROM_BUCKET)
         file.Id = randomUUID()

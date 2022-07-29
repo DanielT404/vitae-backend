@@ -1,61 +1,40 @@
 import 'dotenv/config'
-import { createWriteStream } from 'fs'
-import path from 'path'
 import express from 'express'
-import { json as bodyParserJSON } from 'body-parser'
 
-import helmet from 'helmet'
-import morgan from 'morgan'
-import responseTime from 'response-time'
+import { IMiddlewareOptions } from 'api/middlewares/interfaces/IMiddlewareOptions'
+import { setupMiddlewares } from 'api/middlewares'
 
 import { initializeRedis } from 'utils/services/redis/init'
+import { ArchiveAndClearLogsOnceADay } from 'utils/cronjobs/logs'
+import { getCurrentTime } from 'utils/date/getCurrentTime'
 
-import { filesRouter } from 'routes/files'
-import { projectsRouter } from 'routes/projects'
-import { emailRouter } from 'routes/email'
 
-const SERVER_PORT = process.env.SERVER_PORT;
-const APP_URL = process.env.APP_URL;
+const API_RATE_LIMITER_WINDOW_TIME: number = parseInt(process.env.API_RATE_LIMITER_WINDOW_TIME as string);
+const APP_URL: string = process.env.APP_URL as string;
+const SERVER_PORT: number = parseInt(process.env.SERVER_PORT as string);
 if (APP_URL == null) {
-    throw new Error('APP_URL environment variable is not set and is required in order to run the backend.')
+    throw new Error('APP_URL environment variable is not set and is required in order to set the Access-Control-Allow-Origin middleware response headers.');
 }
-
-try {
-    initializeRedis();
-} catch (error) {
-    throw new Error(error as string);
-}
-
-const app = express()
-app.use(bodyParserJSON())
-app.use(responseTime())
-app.use(
-    morgan("combined", {
-        stream: createWriteStream(
-            path.join(path.resolve(__dirname), "/logs/morgan.combined.log"),
-            {
-                flags: "a",
-            }
-        ),
-    })
-)
-app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", APP_URL)
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST")
-    if (req.method === "OPTIONS") {
-        return res.sendStatus(200)
-    }
-    return next()
-})
-app.use(`${process.env.API_PREFIX}/files`, filesRouter);
-app.use(`${process.env.API_PREFIX}/projects`, projectsRouter);
-app.use(`${process.env.API_PREFIX}/email`, emailRouter);
-
-const date = new Date();
-const formattedDate = new Date(date).toLocaleTimeString();
-
+const app = express();
+app.get('/', (_, res) => {
+    res.status(200).send();
+});
 app.listen(SERVER_PORT, () =>
-    console.log(`[${formattedDate}] API listening on port ${SERVER_PORT} \n`)
-)
+    console.log(`[${getCurrentTime()}] API listening on port ${SERVER_PORT} \n`)
+);
 
+setImmediate(() => {
+    const middlewareOptions: IMiddlewareOptions = {
+        rateLimit: {
+            windowMs: API_RATE_LIMITER_WINDOW_TIME
+        },
+        CORS: {
+            origin: APP_URL
+        }
+    };
+    setupMiddlewares(app, middlewareOptions)
+});
+setImmediate(() => {
+    initializeRedis();
+});
+setImmediate(() => ArchiveAndClearLogsOnceADay());

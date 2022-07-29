@@ -1,8 +1,7 @@
-import { Request } from "express"
 import { IHttpOptions } from "../interfaces/IHttpOptions"
 
-const generateHttpOptions = (req: Request) => {
-    let httpOptions : IHttpOptions = {
+const generateHttpOptions = (req) => {
+    const httpOptions: IHttpOptions = {
         method: req.method,
         path: req.originalUrl,
         hostname: req.hostname,

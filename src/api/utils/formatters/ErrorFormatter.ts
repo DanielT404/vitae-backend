@@ -6,18 +6,22 @@ export enum ErrorFormatterTypes {
     Email = "Email"
 }
 
+interface IExtendedErrorFormatter {
+    setErrorMessage(message: string): void;
+}
+
 interface IErrorFormatter {
-    getErrorMessage(args?: any): string;
+    getErrorMessage(args?: unknown): string;
 }
 
 interface IBaseErrorFormatter {
-    createFormatter(formatterType: ErrorFormatterTypes);
+    createFormatter(formatterType: ErrorFormatterTypes): EmailErrorFormatter | BasicError;
 }
 
 export class ErrorFormatterFactory implements IBaseErrorFormatter {
-    protected readonly _type: ErrorFormatterTypes;
+    protected readonly _type: ErrorFormatterTypes = ErrorFormatterTypes.Email;
     protected readonly _method: ErrorFormatterMethod;
-    protected readonly _message: string;
+    protected readonly _message: string | undefined;
 
     constructor(method: ErrorFormatterMethod, message?: string) {
         this._method = method;
@@ -58,9 +62,14 @@ class EmailErrorFormatter implements IErrorFormatter {
     }
 }
 
-class BasicError implements IErrorFormatter {
+class BasicError implements IErrorFormatter, IExtendedErrorFormatter {
+    private _message = '';
+
     getErrorMessage(): string {
-        return '';
+        return this._message;
+    }
+    setErrorMessage(message: string): void {
+        this._message = message;
     }
 }
 

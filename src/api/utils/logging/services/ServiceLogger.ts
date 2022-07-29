@@ -3,10 +3,10 @@ import { LoggingOf } from "../enum/LoggingOf";
 import { Services } from "../enum/Services";
 
 export class ServiceLogger extends BaseLogger {
-    protected filePath: string;
-    protected route: string
-    protected service: Services;
-    protected loggingOf: LoggingOf;
+    protected filePath = '';
+    protected route = '';
+    protected service: Services = Services.redis;
+    protected loggingOf: LoggingOf = LoggingOf.connect;
 
     getFilePath() {
         this.filePath = `/${this.service}.${this.loggingOf}.log`
