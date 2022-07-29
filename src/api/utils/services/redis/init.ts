@@ -10,7 +10,7 @@ const client = createClient({
 async function initializeRedis() {
     await client.connect();
     client.on("error", (err) => {
-        let log = new ServiceLogger();
+        const log = new ServiceLogger();
         log.setMessage(`Redis client error: ${err}`);
         log.setLoggingOf(LoggingOf.error);
         log.setService(Services.redis);
@@ -18,7 +18,7 @@ async function initializeRedis() {
 
         throw new Error(`Redis client error: ${err}`);
     })
-    let log : ServiceLogger = new ServiceLogger();
+    const log: ServiceLogger = new ServiceLogger();
     log.setMessage('Redis client is active...');
     log.setLoggingOf(LoggingOf.connect);
     log.setService(Services.redis);

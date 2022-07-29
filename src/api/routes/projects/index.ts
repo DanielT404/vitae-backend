@@ -15,14 +15,14 @@ import { Services } from 'utils/logging/enum/Services';
 
 const router = express.Router()
 router.get('/', async (req, res) => {
-    const areProjectsInCache = await client.get("projects");
+    const areProjectsInCache = await client.exists("projects") === 1;
     const logOptions = {
         http: generateHttpOptions(req)
     };
     if (!areProjectsInCache) {
         try {
-            let projects = await getProjects()
-            let log: RouteLogger = new RouteLogger("projects");
+            const projects = await getProjects();
+            const log: RouteLogger = new RouteLogger("projects");
             if (projects) {
                 log.setMessage(`Succesfully retrieved projects from DynamoDB via AWS SDK.`);
 
@@ -31,10 +31,10 @@ router.get('/', async (req, res) => {
                 log.append(log.getLogDir(), logOptions);
                 await client.setEx("projects", config.projects_api_response_cache_period, JSON.stringify(projects));
 
-                return res.status(200).json({ success: true, data: projects })
+                return res.status(200).json({ success: true, data: projects });
             }
         } catch (error) {
-            let log: RouteLogger = new RouteLogger("projects");
+            const log: RouteLogger = new RouteLogger("projects");
             log.setMessage(`Error encountered while trying to get projects. Error message: "${error}"`);
             log.setLoggingOf(LoggingOf.error);
             log.setService(Services.DynamoDB);
@@ -43,7 +43,7 @@ router.get('/', async (req, res) => {
             return res.status(500).json({
                 success: false,
                 message: "Service is temporarily unavailable, please try again later."
-            })
+            });
         }
     }
     try {
@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
         let log: RouteLogger = new RouteLogger("projects");
         log.setMessage(`[GET] Client is requesting projects...`);
         log.setService(Services.redis);
-        log.setLoggingOf(LoggingOf.access)
+        log.setLoggingOf(LoggingOf.access);
         log.append(log.getLogDir(), logOptions);
 
         log = new RouteLogger("projects");
@@ -60,9 +60,9 @@ router.get('/', async (req, res) => {
         log.setLoggingOf(LoggingOf.access);
         log.append(log.getLogDir(), logOptions);
 
-        return res.status(200).json({ success: true, data: JSON.parse(cachedProjects) });
+        return res.status(200).json({ success: true, data: JSON.parse(cachedProjects as string) });
     } catch (error) {
-        let log: RouteLogger = new RouteLogger("projects");
+        const log: RouteLogger = new RouteLogger("projects");
         log.setMessage(`Error encountered while trying to get projects from Redis. Error message: "${error}"`);
         log.setService(Services.redis);
         log.setLoggingOf(LoggingOf.error);
@@ -71,7 +71,7 @@ router.get('/', async (req, res) => {
             success: false,
             message:
                 "Service is temporarily unavailable, please try again later.",
-        })
+        });
     }
 })
 

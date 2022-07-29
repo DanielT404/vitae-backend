@@ -1,8 +1,8 @@
 import { SendEmailCommand, SendEmailCommandInput, SendEmailCommandOutput } from '@aws-sdk/client-ses'
 import { sesClient } from './client';
 
-const sendEmail = async (name: string, email: string, message: string) : Promise<SendEmailCommandOutput> => {
-    const params : SendEmailCommandInput = {
+const sendEmail = async (name: string, email: string, message: string): Promise<SendEmailCommandOutput> => {
+    const params: SendEmailCommandInput = {
         Destination: {
             ToAddresses: [process.env.AWS_SES_EMAIL as string],
         },
@@ -21,13 +21,13 @@ const sendEmail = async (name: string, email: string, message: string) : Promise
             },
         },
         Source: process.env.AWS_SES_EMAIL as string,
-    }
+    };
     try {
-        const command = new SendEmailCommand(params)
-        const response = await sesClient.send(command)
-        return response
+        const command = new SendEmailCommand(params);
+        const response = await sesClient.send(command);
+        return response;
     } catch (err) {
-        throw new Error(err as string)
+        throw new Error(err as string);
     }
 }
 

@@ -4,32 +4,32 @@ import { LoggingOf } from "../enum/LoggingOf";
 import { Services } from "../enum/Services";
 
 export class RouteLogger extends BaseLogger {
-    protected logDir: string = `routes`;
-    protected route: string;
-    protected message: string;
-    protected loggingOf: LoggingOf;
-    protected service?: Services = null;
+    protected logDir = `routes`;
+    protected route = '';
+    protected message = '';
+    protected loggingOf: LoggingOf = LoggingOf.debug;
+    protected service: Services = Services.DynamoDB;
 
     constructor(route: string) {
         super();
         this.route = route;
     }
 
-    getRoute() : string {
+    getRoute(): string {
         return this.route;
     }
 
-    getLoggingOf() : LoggingOf {
+    getLoggingOf(): LoggingOf {
         return this.loggingOf;
     }
 
-    getService() : Services {
+    getService(): Services {
         return this.service;
     }
 
-    getLogDir() : string {
+    getLogDir(): string {
         let logDir = `/${this.logDir}/${this.route}/${this.loggingOf}`;
-        if(this.service) {
+        if (this.service) {
             logDir += `.${this.service}.log`;
         } else {
             logDir += `${this.getRoute()}.log`;

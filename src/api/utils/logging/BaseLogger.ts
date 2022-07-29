@@ -1,16 +1,16 @@
-import { appendFile } from 'fs';
 import path from 'path';
+import { appendFile } from 'fs';
 import { IAppendOptions } from './routes/interfaces/IAppendOptions';
+
+import { getCurrentTime } from 'utils/date/getCurrentTime';
 
 
 export class BaseLogger {
     protected static readonly logBaseDir: string = '/logs';
-    protected message: string = '';
+    protected message = '';
 
     append(logPath: string, options?: IAppendOptions): void {
-        const date = new Date().toLocaleString('en-US', { timeZone: 'Europe/Bucharest' });
-        const formattedDate = new Date(date).toJSON();
-        let data = `[${formattedDate}] ${this.getMessage()} \n`;
+        let data = `[${getCurrentTime()}] ${this.getMessage()} \n`;
 
         if (options?.http) {
             const { hostname, method, path, version } = options.http;

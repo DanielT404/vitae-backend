@@ -1,14 +1,14 @@
 import { captureFileExtension } from './captureFileExtension'
 
 interface IFileTypes {
-    [key : string] : FileTypes | undefined
+    [key: string]: FileTypes | undefined
 }
 export enum FileTypes {
     image = "image",
     text = "text"
 }
-export async function generateFileTypeByExtension(fileName: string) : Promise<any> {
-    const fileTypes : IFileTypes = {
+export async function generateFileTypeByExtension(fileName: string): Promise<string> {
+    const fileTypes: IFileTypes = {
         jpg: FileTypes.image,
         gif: FileTypes.image,
         bmp: FileTypes.image,

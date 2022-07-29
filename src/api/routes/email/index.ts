@@ -1,6 +1,6 @@
-import * as express from 'express';
-import fetch from 'node-fetch'
-import { check, validationResult } from 'express-validator'
+import express from 'express';
+import fetch from 'node-fetch';
+import { check, validationResult } from 'express-validator';
 
 // ses utils
 import { sendEmail } from 'utils/services/ses/sendEmail';
@@ -14,8 +14,7 @@ import { generateHttpOptions } from 'utils/logging/routes/functions/generateHttp
 import { ErrorFormatterFactory, ErrorFormatterMethod, ErrorFormatterTypes } from 'utils/formatters/ErrorFormatter';
 import { Services } from 'utils/logging/enum/Services';
 
-
-const router = express.Router()
+const router = express.Router();
 router.post(
     "/",
     check("secret").not().isEmpty(),
@@ -27,28 +26,26 @@ router.post(
         const logOptions = {
             http: generateHttpOptions(req)
         };
-
         const factory = new ErrorFormatterFactory(ErrorFormatterMethod.POST);
         const mailErrorFormatter = factory.createFormatter(ErrorFormatterTypes.Email);
         const errors = validationResult(req).formatWith(mailErrorFormatter.getErrorMessage);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() })
+            return res.status(400).json({ errors: errors.array() });
         }
-        const { name, email, message, secret, token } = req.body
-        const VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify"
+        const { name, email, message, secret, token } = req.body;
+        const VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify";
         const verify = await fetch(VERIFY_URL, {
             method: "POST",
             body: `secret=${secret}&response=${token}`,
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        })
-        const verification: any = await verify.json()
+        });
+        const verification = await verify.json();
         if (verification.success) {
             try {
-                let { MessageId } = await sendEmail(name, email, message)
+                const { MessageId } = await sendEmail(name, email, message);
 
-                let log: RouteLogger = new RouteLogger("email");
+                const log: RouteLogger = new RouteLogger("email");
                 log.setMessage("Email sent succesfully via AWS SES SDK.");
-                log.setRoute("email");
                 log.setLoggingOf(LoggingOf.access);
                 log.setService(Services.SES);
                 log.append(log.getLogDir(), logOptions);
@@ -58,11 +55,10 @@ router.post(
                     messageId: MessageId,
                     message:
                         "Your message has been sent succesfully. Keep in touch!",
-                })
+                });
             } catch (error) {
-                let log = new RouteLogger("email");
+                const log = new RouteLogger("email");
                 log.setMessage(`Error encountered while trying to send email. Error message: "${error}"`);
-                log.setRoute("email");
                 log.setLoggingOf(LoggingOf.error);
                 log.setService(Services.SES);
                 log.append(log.getLogDir(), logOptions);
@@ -71,13 +67,13 @@ router.post(
                     success: false,
                     message:
                         "Service is temporary unavailable, please try again later.",
-                })
+                });
             }
         } else {
             return res.status(400).json({
                 success: false,
                 message: "Please retry reCAPTCHA challenge.",
-            })
+            });
         }
     }
 )

@@ -1,24 +1,23 @@
 {
-    "compilerOptions": {
-        // "strict": true,
-        "noEmit": false,
-        "incremental": true,
-        "isolatedModules": true,
-        "skipLibCheck": true,
-        "esModuleInterop": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "forceConsistentCasingInFileNames": true,
-        "noFallthroughCasesInSwitch": true,
-        "moduleResolution": "node",
-        "baseUrl": "./src",
-        "paths":{
-            "utils/*": ["api/utils/*"],
-            "routes/*": ["api/routes/*"]
-        },
-    },
-    "include": [
-        "src/**/*.ts"
-    ],
-    "exclude": ["node_modules/**"]
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": false,
+    "incremental": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "baseUrl": "./src/",
+    "paths": {
+      "utils/*": ["api/utils/*"],
+      "routes/*": ["api/routes/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "index.ts"],
+  "exclude": ["node_modules/**"]
 }
